@@ -108,12 +108,45 @@ function Barreiras(altura, largura, abertura, espaco, notificarPonto) {
   };
 }
 
-/* Creating a new instance of the Barreiras class and appending it to the DOM. */
+/**
+ * The Passaro function takes in the height of the game and returns an object with a method called
+ * animar that moves the bird up or down depending on whether the up or down arrow key is pressed.
+ * @param alturaJogo - The height of the game.
+ */
+function Passaro(alturaJogo) {
+  let voando = false;
+
+  this.elemento = novoElemento("img", "passaro");
+  this.elemento.src = "imagens/passaro.png";
+
+  this.getY = () => parseInt(this.elemento.style.bottom.split("px")[0]);
+  this.setY = (y) => (this.elemento.style.bottom = `${y}px`);
+
+  window.onkeydown = (e) => (voando = true);
+  window.onkeyup = (e) => (voando = false);
+
+  this.animar = () => {
+    const novoY = this.getY() + (voando ? 8 : -5);
+    const alturaMaxima = alturaJogo - this.elemento.clientHeight;
+
+    if (novoY <= 0) {
+      this.setY(0);
+    } else if (novoY >= alturaMaxima) {
+      this.setY(alturaMaxima);
+    } else {
+      this.setY(novoY);
+    }
+  };
+
+  this.setY(alturaJogo / 2);
+}
+
 const barreiras = new Barreiras(700, 1200, 200, 400);
-
-const areaDoJogo = document.querySelector("[tp-flappy]");
-barreiras.pares.forEach((par) => areaDoJogo.appendChild(par.elemento));
-
+const passaro = new Passaro(700);
+const areaJogo = document.querySelector("[tp-flappy]");
+areaJogo.appendChild(passaro.elemento);
+barreiras.pares.forEach((par) => areaJogo.appendChild(par.elemento));
 setInterval(() => {
   barreiras.animar();
+  passaro.animar();
 }, 20);
