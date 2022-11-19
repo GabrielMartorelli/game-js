@@ -72,6 +72,48 @@ function ParDeBarreiras(altura, abertura, x) {
   this.setX(x);
 }
 
-/* Creating a new instance of the ParDeBarreiras class and appending it to the DOM. */
-const b = new ParDeBarreiras(700, 200, 800);
-document.querySelector("[tp-flappy]").appendChild(b.elemento);
+/**
+ * This function creates a new object called Barreiras, which has a property called pares, which is an
+ * array of objects called ParDeBarreiras, which has a property called setX, which is a function that
+ * takes a parameter called x, which is the value of the property called x, which is a property of the
+ * object called ParDeBarreiras, which is an object in the array called pares, which is a property of
+ * the object called Barreiras.
+ * @param altura - height of the canvas
+ * @param largura - width of the canvas
+ * @param abertura - the height of the gap between the two barriers
+ * @param espaco - space between the barriers
+ * @param notificarPonto - function that is called when the bird passes through the middle of the
+ * barrier.
+ */
+function Barreiras(altura, largura, abertura, espaco, notificarPonto) {
+  this.pares = [
+    new ParDeBarreiras(altura, abertura, largura),
+    new ParDeBarreiras(altura, abertura, largura + espaco),
+    new ParDeBarreiras(altura, abertura, largura + espaco * 2),
+    new ParDeBarreiras(altura, abertura, largura + espaco * 3),
+  ];
+  const deslocamento = 3;
+  this.animar = () => {
+    this.pares.forEach((par) => {
+      par.setX(par.getX() - deslocamento);
+      if (par.getX() < par.getLargura()) {
+        par.setX(par.getX() + espaco * this.pares.length);
+        par.sortearAbertura();
+      }
+      const meio = largura / 2;
+      const cruzouOMeio =
+        par.getX() + deslocamento >= meio && par.getX() < meio;
+      if (cruzouOMeio) notificarPonto();
+    });
+  };
+}
+
+/* Creating a new instance of the Barreiras class and appending it to the DOM. */
+const barreiras = new Barreiras(700, 1200, 200, 400);
+
+const areaDoJogo = document.querySelector("[tp-flappy]");
+barreiras.pares.forEach((par) => areaDoJogo.appendChild(par.elemento));
+
+setInterval(() => {
+  barreiras.animar();
+}, 20);
