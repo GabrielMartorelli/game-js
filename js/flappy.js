@@ -141,12 +141,48 @@ function Passaro(alturaJogo) {
   this.setY(alturaJogo / 2);
 }
 
-const barreiras = new Barreiras(700, 1200, 200, 400);
-const passaro = new Passaro(700);
-const areaJogo = document.querySelector("[tp-flappy]");
-areaJogo.appendChild(passaro.elemento);
-barreiras.pares.forEach((par) => areaJogo.appendChild(par.elemento));
-setInterval(() => {
-  barreiras.animar();
-  passaro.animar();
-}, 20);
+/**
+ * This function creates a new span element with the class name 'progresso' and then creates a new
+ * function that updates the innerHTML of the span element with the value of the parameter 'pontos'
+ * (which is the number of points the player has earned).
+ */
+function Progresso() {
+  this.elemento = novoElemento("span", "progresso");
+
+  this.atualizarPontos = (pontos) => {
+    this.elemento.innerHTML = pontos;
+  };
+  this.atualizarPontos(0);
+}
+
+/**
+ * The FlappyBird function creates a new instance of the Progresso, Barreiras, and Passaro classes, and
+ * then appends the elements of each to the DOM.
+ */
+function FlappyBird() {
+  let pontos = 0;
+
+  const areaJogo = document.querySelector("[tp-flappy]");
+  const altura = areaJogo.clientHeight;
+  const largura = areaJogo.clientWidth;
+
+  const progresso = new Progresso();
+  const barreiras = new Barreiras(altura, largura, 200, 400, () =>
+    progresso.atualizarPontos(++pontos)
+  );
+  const passaro = new Passaro(altura);
+
+  areaJogo.appendChild(progresso.elemento);
+  areaJogo.appendChild(passaro.elemento);
+
+  barreiras.pares.forEach((par) => areaJogo.appendChild(par.elemento));
+
+  this.start = () => {
+    const temporizador = setInterval(() => {
+      barreiras.animar(), passaro.animar();
+    }, 20);
+  };
+}
+
+/* Creating a new instance of the FlappyBird class and then calling the start method on that instance. */
+new FlappyBird().start();
