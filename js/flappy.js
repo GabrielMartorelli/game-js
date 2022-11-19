@@ -156,6 +156,62 @@ function Progresso() {
 }
 
 /**
+ * If the left edge of A is to the right of the left edge of B, and the right edge of A is to the left
+ * of the right edge of B, and the top edge of A is below the top edge of B, and the bottom edge of A
+ * is above the bottom edge of B, then A and B are overlapping.
+ * @param elementoA - The first element to compare.
+ * @param elementoB - the element that is being dragged
+ * @returns a boolean value.
+ */
+function estaoSobrePostos(elementoA, elementoB) {
+  const a = elementoA.getBoundingClientRect();
+  const b = elementoB.getBoundingClientRect();
+
+  const horizontal = a.left + a.width >= b.left && b.left + b.width >= a.left;
+  const vertical = a.top + a.height >= b.top && b.top + b.height >= a.top;
+
+  return horizontal && vertical;
+}
+
+/**
+ * "If the bird is not colliding with any of the barriers, then it is colliding with the barriers."
+ *
+ * The function is called "colidiu" which means "collided" in Portuguese.
+ *
+ * The function takes two parameters: the bird and the barriers.
+ *
+ * The function returns a boolean value.
+ *
+ * The function has a variable called "colidiu" which means "collided" in Portuguese.
+ *
+ * The function has a forEach loop that loops through the barriers.
+ *
+ * The function has a variable called "ParDeBarreiras" which means "Pair of Barriers" in Portuguese.
+ *
+ * The function has a variable called "superior" which means "superior" in Portuguese.
+ *
+ * The function has a variable called "inferior" which means "inferior" in Portuguese.
+ * @param passaro - is the bird
+ * @param barreiras - {
+ * @returns a boolean value.
+ */
+function colidiu(passaro, barreiras) {
+  let colidiu = false;
+
+  barreiras.pares.forEach((ParDeBarreiras) => {
+    if (!colidiu) {
+      const superior = ParDeBarreiras.superior.elemento;
+      const inferior = ParDeBarreiras.inferior.elemento;
+
+      colidiu =
+        estaoSobrePostos(passaro.elemento, superior) ||
+        estaoSobrePostos(passaro.elemento, inferior);
+    }
+  });
+  return colidiu;
+}
+
+/**
  * The FlappyBird function creates a new instance of the Progresso, Barreiras, and Passaro classes, and
  * then appends the elements of each to the DOM.
  */
@@ -180,6 +236,9 @@ function FlappyBird() {
   this.start = () => {
     const temporizador = setInterval(() => {
       barreiras.animar(), passaro.animar();
+      if (colidiu(passaro, barreiras)) {
+        clearInterval(temporizador);
+      }
     }, 20);
   };
 }
